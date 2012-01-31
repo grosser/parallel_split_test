@@ -8,5 +8,7 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.email = "michael@grosser.it"
   s.homepage = "http://github.com/grosser/#{name}"
   s.files = `git ls-files`.split("\n")
+  s.executables = ["parallel_split_test"]
+  s.add_dependency 'parallel_tests'
   s.license = 'MIT'
 end
