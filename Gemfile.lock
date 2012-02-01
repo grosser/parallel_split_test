@@ -19,7 +19,6 @@ GEM
     rspec-expectations (2.8.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.8.0)
-    unindent (1.0)
 
 PLATFORMS
   ruby
@@ -27,4 +26,3 @@ PLATFORMS
 DEPENDENCIES
   parallel_split_test!
   rake
-  unindent

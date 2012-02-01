@@ -23,6 +23,12 @@ describe ParallelSplitTest do
       run "../../bin/parallel_split_test #{x}"
     end
 
+    def time
+      start = Time.now.to_f
+      yield
+      Time.now.to_f - start
+    end
+
     let(:root) { File.expand_path('../../', __FILE__) }
 
     before do
@@ -59,33 +65,43 @@ describe ParallelSplitTest do
     end
 
     describe "running tests" do
-      describe "running tests" do
-        describe "RSpec" do
-          it "runs a rspec file in parallel" do
-            write "xxx_spec.rb", <<-RUBY.unindent
-            describe "X" do
-              it "a" do
-                puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
-              end
-            end
-
-            describe "Y" do
-              it "b" do
-                puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
-              end
-            end
-            RUBY
-            result = parallel_split_test "xxx_spec.rb"
-
-            processes = ["a","b"].map do |process|
-              rex = /it-ran-#{process}-in-(\d)-/
-              result.should =~ rex
-              result.match(rex)[1]
-            end
-
-            processes.should == ['0','2']
+      it "runs in different processes" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          it "a" do
+            puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
           end
         end
+
+        describe "Y" do
+          it "b" do
+            puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
+          end
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+
+        processes = ["a","b"].map do |process|
+          rex = /it-ran-#{process}-in-(\d)-/
+          result.should =~ rex
+          result.match(rex)[1]
+        end
+
+        processes.should == ['0','2']
+      end
+
+      it "runs faster" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          it { sleep 1  }
+        end
+
+        describe "Y" do
+          it { sleep 1  }
+        end
+        RUBY
+
+        time{ parallel_split_test "xxx_spec.rb" }.should < 2
       end
     end
   end
