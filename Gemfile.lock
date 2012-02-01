@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    parallel_split_test (0.1.1)
+    parallel_split_test (0.1.2)
       parallel (>= 0.5.12)
       rspec (>= 2)
 
