@@ -9,6 +9,21 @@ Or
 
 Usage
 =====
+
+### 1: prepare your databases
+To use 1 database per test-process, add this to your `config/database.yml`<br/>
+
+    test:
+      database: yourproject_test<%= ENV['TEST_ENV_NUMBER'] %>
+
+
+ - `TEST_ENV_NUMBER` is '' for the first process and 2 for the 2nd, it reuses your normal test database
+ - Optionally install [parallel_tests](https://github.com/grosser/parallel_tests) to get database helper tasks like `rake parallel:prepare`
+
+
+### 2: split your test files into multiple describes
+(this will not be necessary once the TODO is fixed)
+
     # spec/xxx_spec.rb
     require "spec_helper"
 
@@ -24,6 +39,7 @@ Usage
       it {sleep 5}
     end
 
+### 3: run
     parallel_split_test spec/xxx_spec.rb [regular rspec options]
 
 Output
@@ -52,8 +68,9 @@ TODO
 ====
  - combine exit status (1 + 0 == 1)
  - support a single group with multiple sub-groups
- - Test::Unit support
+ - re-print summary of all test results
  - Cucumber support
+ - Test::Unit support
 
 Author
 ======
