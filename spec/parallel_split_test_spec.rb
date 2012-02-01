@@ -20,7 +20,7 @@ describe ParallelSplitTest do
     end
 
     def parallel_split_test(x)
-      run "../../bin/parallel_split_test #{x}"
+      run "PARALLEL_SPLIT_TEST_PROCESSES=2 ../../bin/parallel_split_test #{x}"
     end
 
     def time
@@ -87,7 +87,7 @@ describe ParallelSplitTest do
           result.match(rex)[1]
         end
 
-        processes.should == ['0','2']
+        processes.sort.should == ['0','2']
       end
 
       it "runs faster" do
