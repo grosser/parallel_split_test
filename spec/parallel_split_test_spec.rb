@@ -13,6 +13,12 @@ describe ParallelSplitTest do
       result
     end
 
+    def write(path, content)
+      run "mkdir -p #{File.dirname(path)}" unless File.exist?(File.dirname(path))
+      File.open(path, 'w'){|f| f.write content }
+      path
+    end
+
     def parallel_split_test(x)
       run "../../bin/parallel_split_test #{x}"
     end
@@ -59,22 +65,25 @@ describe ParallelSplitTest do
             write "xxx_spec.rb", <<-RUBY.unindent
             describe "X" do
               it "a" do
-                puts "it-ran-a-in-#{ENV['TEST_ENV_NUMBER'].to_i}-"
+                puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
               end
+            end
 
+            describe "Y" do
               it "b" do
-                puts "it-ran-b-in-#{ENV['TEST_ENV_NUMBER'].to_i}-"
+                puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
               end
             end
             RUBY
-
             result = parallel_split_test "xxx_spec.rb"
-            result.should =~ /it-ran-a-in-(\d)-/
-            process_of_a = $1
-            result.should =~ /it-ran-b-in-(\d)-/
-            process_of_b = $1
 
-            process_of_a.should_not == process_of_b
+            processes = ["a","b"].map do |process|
+              rex = /it-ran-#{process}-in-(\d)-/
+              result.should =~ rex
+              result.match(rex)[1]
+            end
+
+            processes.should == ['0','2']
           end
         end
       end

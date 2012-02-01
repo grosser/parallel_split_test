@@ -2,6 +2,6 @@ source :rubygems
 gemspec
 
 group :development do
+  gem 'unindent'
   gem 'rake'
-  gem 'rspec', '~>2'
 end
