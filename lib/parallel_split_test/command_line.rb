@@ -1,5 +1,6 @@
 require 'parallel'
 require 'rspec/core/command_line'
+require 'parallel_split_test/core_ext/rspec_example'
 
 module ParallelSplitTest
   class CommandLine < RSpec::Core::CommandLine
@@ -8,6 +9,10 @@ module ParallelSplitTest
       processes = (ENV['PARALLEL_SPLIT_TEST_PROCESSES'] || Parallel.processor_count).to_i
 
       Parallel.in_processes(processes) do |process_number|
+        $example_counter = 0
+        $process_count = processes
+        $process_number = process_number
+
         ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
         run_group_of_tests(processes, process_number)
       end
@@ -21,7 +26,7 @@ module ParallelSplitTest
       @configuration.reporter.report(example_count, seed) do |reporter|
         begin
           @configuration.run_hook(:before, :suite)
-          groups = groups_for_this_process(@world.example_groups.ordered, process_number, processes)
+          groups = @world.example_groups.ordered
           groups.map {|g| g.run(reporter)}.all? ? 0 : @configuration.failure_exit_code
         ensure
           @configuration.run_hook(:after, :suite)
@@ -31,14 +36,6 @@ module ParallelSplitTest
 
     def seed
       @configuration.randomize? ? @configuration.seed : nil
-    end
-
-    def groups_for_this_process(groups, number, count)
-      selected = []
-      groups.each_with_index do |group, i|
-        selected << group if i % count == number
-      end
-      selected
     end
 
     def setup_copied_from_rspec(err, out)

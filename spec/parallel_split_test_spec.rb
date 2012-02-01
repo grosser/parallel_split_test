@@ -80,6 +80,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
+        result.scan('1 example, 0 failures').size.should == 2
 
         processes = ["a","b"].map do |process|
           rex = /it-ran-#{process}-in-(\d)-/
@@ -102,6 +103,21 @@ describe ParallelSplitTest do
         RUBY
 
         time{ parallel_split_test "xxx_spec.rb" }.should < 2
+      end
+
+      it "splits based on examples" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          describe "Y" do
+            it { sleep 1  }
+            it { sleep 1  }
+          end
+        end
+        RUBY
+
+        result = nil
+        time{ result = parallel_split_test "xxx_spec.rb" }.should < 2
+        result.scan('1 example, 0 failures').size.should == 2
       end
     end
   end
