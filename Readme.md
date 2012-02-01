@@ -44,6 +44,10 @@ Output
     sys  0m0.080s
 
 
+TIPS
+====
+ - set number of processes to use with `PARALLEL_SPLIT_TEST_PROCESSES` environment variable
+
 TODO
 ====
  - combine exit status (1 + 0 == 1)
