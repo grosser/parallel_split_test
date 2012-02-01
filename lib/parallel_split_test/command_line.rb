@@ -23,8 +23,6 @@ module ParallelSplitTest
         begin
           @configuration.run_hook(:before, :suite)
           groups = groups_for_this_process(@world.example_groups.ordered, process_number, processes)
-          puts "PROCESS #{process_number} -- #{groups.size}"
-
           groups.map {|g| g.run(reporter)}.all? ? 0 : @configuration.failure_exit_code
         ensure
           @configuration.run_hook(:after, :suite)
