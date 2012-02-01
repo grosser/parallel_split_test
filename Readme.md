@@ -24,7 +24,25 @@ Usage
       it {sleep 5}
     end
 
-    time parallel_split_test spec/xxx_spec.rb [regular rspec options]
+    parallel_split_test spec/xxx_spec.rb [regular rspec options]
+
+Output
+======
+
+    time ./bin/parallel_split_test spec/xx_spec.rb
+    .
+
+    Finished in 5 seconds
+    1 example, 0 failures
+    ..
+
+    Finished in 1 seconds
+    2 examples, 0 failures
+
+    real  0m11.015s
+    user  0m0.908s
+    sys  0m0.080s
+
 
 TODO
 ====
