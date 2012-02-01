@@ -21,21 +21,14 @@ To use 1 database per test-process, add this to your `config/database.yml`<br/>
  - Optionally install [parallel_tests](https://github.com/grosser/parallel_tests) to get database helper tasks like `rake parallel:prepare`
 
 
-### 2: split your test files into multiple describes
-(this will not be necessary once the TODO is fixed)
+### 2: find a slow/big test file
 
     # spec/xxx_spec.rb
     require "spec_helper"
 
     describe "X" do
       it {sleep 5}
-    end
-
-    describe "Y" do
       it {sleep 5}
-    end
-
-    describe "Z" do
       it {sleep 5}
     end
 
@@ -67,7 +60,6 @@ TIPS
 TODO
 ====
  - combine exit status (1 + 0 == 1)
- - support a single group with multiple sub-groups
  - re-print summary of all test results
  - Cucumber support
  - Test::Unit support
