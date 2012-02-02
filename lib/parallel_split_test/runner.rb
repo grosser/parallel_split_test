@@ -1,5 +1,3 @@
-require 'rspec/core/runner'
-require 'rspec/core/configuration_options'
 require 'parallel_split_test/command_line'
 
 # a cleaned up version of the RSpec runner, e.g. no drb support

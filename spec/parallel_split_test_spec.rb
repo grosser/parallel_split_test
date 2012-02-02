@@ -5,6 +5,30 @@ describe ParallelSplitTest do
     ParallelSplitTest::VERSION.should =~ /^[\.\da-z]+$/
   end
 
+  describe ".best_number_of_processes" do
+    before do
+      ENV['PARALLEL_SPLIT_TEST_PROCESSES'] = nil
+    end
+
+    let(:count) { ParallelSplitTest.send(:best_number_of_processes) }
+
+    it "uses ENV" do
+      ENV['PARALLEL_SPLIT_TEST_PROCESSES'] = "5"
+      count.should == 5
+    end
+
+    it "uses physical_processor_count" do
+      Parallel.stub(:physical_processor_count).and_return 6
+      count.should == 6
+    end
+
+    it "uses processor_count if everything else fails" do
+      Parallel.stub(:physical_processor_count).and_return 0
+      Parallel.stub(:processor_count).and_return 7
+      count.should == 7
+    end
+  end
+
   describe "cli" do
     def run(command, options={})
       result = `#{command} 2>&1`

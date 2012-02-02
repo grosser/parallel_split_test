@@ -10,6 +10,6 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.files = `git ls-files`.split("\n")
   s.executables = ["parallel_split_test"]
   s.add_dependency "rspec", ">=2"
-  s.add_dependency "parallel", ">=0.5.12"
+  s.add_dependency "parallel", ">=0.5.13"
   s.license = "MIT"
 end
