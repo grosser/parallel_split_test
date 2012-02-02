@@ -69,26 +69,19 @@ describe ParallelSplitTest do
         write "xxx_spec.rb", <<-RUBY
         describe "X" do
           it "a" do
-            puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
+            puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER']}-"
           end
         end
 
         describe "Y" do
           it "b" do
-            puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER'].to_i}-"
+            puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER']}-"
           end
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         result.scan('1 example, 0 failures').size.should == 2
-
-        processes = ["a","b"].map do |process|
-          rex = /it-ran-#{process}-in-(\d)-/
-          result.should =~ rex
-          result.match(rex)[1]
-        end
-
-        processes.sort.should == ['0','2']
+        result.scan(/it-ran-.-in-.?-/).sort.should == ["it-ran-a-in--", "it-ran-b-in-2-"]
       end
 
       it "runs faster" do
@@ -118,6 +111,12 @@ describe ParallelSplitTest do
         result = nil
         time{ result = parallel_split_test "xxx_spec.rb" }.should < 2
         result.scan('1 example, 0 failures').size.should == 2
+      end
+
+      it "sets up TEST_ENV_NUMBER before loading the test files, so db connections are set up correctly" do
+        write "xxx_spec.rb", 'puts "ENV_IS_#{ENV[\'TEST_ENV_NUMBER\']}_"'
+        result = parallel_split_test "xxx_spec.rb"
+        result.scan(/ENV_IS_.?_/).sort.should == ["ENV_IS_2_", "ENV_IS__"]
       end
     end
   end
