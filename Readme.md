@@ -38,7 +38,9 @@ To use 1 database per test-process, add this to your `config/database.yml`<br/>
 Output
 ======
 
-    time ./bin/parallel_split_test spec/xx_spec.rb
+    parallel_split_test spec/xx_spec.rb
+
+    Running examples in 2 processes
     .
 
     Finished in 5 seconds
@@ -48,9 +50,7 @@ Output
     Finished in 1 seconds
     2 examples, 0 failures
 
-    real  0m11.015s
-    user  0m0.908s
-    sys  0m0.080s
+    Took 10.06 seconds with 2 processes
 
 
 TIPS

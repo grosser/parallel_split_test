@@ -6,8 +6,6 @@ require 'parallel_split_test/core_ext/rspec_example'
 module ParallelSplitTest
   class CommandLine < RSpec::Core::CommandLine
     def run(err, out)
-      ParallelSplitTest.choose_number_of_processes
-
       Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
         ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
         setup_copied_from_rspec(err, out)

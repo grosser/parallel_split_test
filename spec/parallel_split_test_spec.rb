@@ -178,6 +178,24 @@ describe ParallelSplitTest do
         result = parallel_split_test "xxx_spec.rb"
         result.should include('No examples found')
       end
+
+      it "prints a summary before running" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+        result.should include('Running examples in 2 processes')
+      end
+
+      it "prints a runtime summary at the end" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+        result.should =~ /Took [\d\.]+ seconds with 2 processes/
+      end
     end
   end
 end
