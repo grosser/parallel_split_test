@@ -43,8 +43,8 @@ describe ParallelSplitTest do
       path
     end
 
-    def parallel_split_test(x)
-      run "PARALLEL_SPLIT_TEST_PROCESSES=2 ../../bin/parallel_split_test #{x}"
+    def parallel_split_test(x, options={})
+      run "PARALLEL_SPLIT_TEST_PROCESSES=2 ../../bin/parallel_split_test #{x}", options
     end
 
     def time
@@ -141,6 +141,42 @@ describe ParallelSplitTest do
         write "xxx_spec.rb", 'puts "ENV_IS_#{ENV[\'TEST_ENV_NUMBER\']}_"'
         result = parallel_split_test "xxx_spec.rb"
         result.scan(/ENV_IS_.?_/).sort.should == ["ENV_IS_2_", "ENV_IS__"]
+      end
+
+      it "fails when one of the processes fail" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          it { sleep 0.1; raise }
+          it { sleep 0.1  }
+        end
+        RUBY
+
+        # test works because if :fail => true does not fail it raises
+        result = parallel_split_test "xxx_spec.rb", :fail => true
+        result.should include('1 example, 1 failure')
+        result.should include('1 example, 0 failures')
+      end
+
+      it "fails when all processes fail" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          it { sleep 0.1; raise }
+          it { sleep 0.1; raise  }
+        end
+        RUBY
+
+        # test works because if :fail => true does not fail it raises
+        result = parallel_split_test "xxx_spec.rb", :fail => true
+        result.scan('1 example, 1 failure').size.should == 2
+      end
+
+      it "passes when no tests where run" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+        result.should include('No examples found')
       end
     end
   end

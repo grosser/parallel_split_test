@@ -6,6 +6,8 @@ RSpec::Core::Example.class_eval do
   def run(*args, &block)
     if ParallelSplitTest.run_example?
       run_without_parallel_split_test(*args, &block)
+    else
+      true # example 'passed'
     end
   end
 end

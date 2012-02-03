@@ -59,7 +59,6 @@ TIPS
 
 TODO
 ====
- - combine exit status (1 + 0 == 1)
  - re-print summary of all test results
  - Cucumber support
  - Test::Unit support

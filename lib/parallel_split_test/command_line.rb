@@ -28,7 +28,8 @@ module ParallelSplitTest
         begin
           @configuration.run_hook(:before, :suite)
           groups = @world.example_groups.ordered
-          groups.map {|g| g.run(reporter)}.all? ? 0 : @configuration.failure_exit_code
+          results = groups.map {|g| g.run(reporter)}
+          results.all? ? 0 : @configuration.failure_exit_code
         ensure
           @configuration.run_hook(:after, :suite)
         end
