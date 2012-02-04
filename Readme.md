@@ -50,6 +50,9 @@ Output
     Finished in 1 seconds
     2 examples, 0 failures
 
+    Summary:
+    1 example, 0 failures
+    2 examples, 0 failures
     Took 10.06 seconds with 2 processes
 
 
@@ -59,7 +62,6 @@ TIPS
 
 TODO
 ====
- - re-print summary of all test results
  - Cucumber support
  - Test::Unit support
 

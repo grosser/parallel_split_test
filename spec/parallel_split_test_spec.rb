@@ -104,7 +104,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.scan('1 example, 0 failures').size.should == 2
+        result.scan('1 example, 0 failures').size.should == 4
         result.scan(/it-ran-.-in-.?-/).sort.should == ["it-ran-a-in--", "it-ran-b-in-2-"]
       end
 
@@ -134,7 +134,7 @@ describe ParallelSplitTest do
 
         result = nil
         time{ result = parallel_split_test "xxx_spec.rb" }.should < 2
-        result.scan('1 example, 0 failures').size.should == 2
+        result.scan('1 example, 0 failures').size.should == 4
       end
 
       it "sets up TEST_ENV_NUMBER before loading the test files, so db connections are set up correctly" do
@@ -167,7 +167,7 @@ describe ParallelSplitTest do
 
         # test works because if :fail => true does not fail it raises
         result = parallel_split_test "xxx_spec.rb", :fail => true
-        result.scan('1 example, 1 failure').size.should == 2
+        result.scan('1 example, 1 failure').size.should == 4
       end
 
       it "passes when no tests where run" do
@@ -195,6 +195,17 @@ describe ParallelSplitTest do
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         result.should =~ /Took [\d\.]+ seconds with 2 processes/
+      end
+
+      it "reprints all summary lines at the end" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          it {  }
+          it { sleep 0.1  }
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+        result.should include("1 example, 0 failures\n1 example, 0 failures")
       end
     end
   end

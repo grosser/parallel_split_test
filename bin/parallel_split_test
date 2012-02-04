@@ -23,4 +23,4 @@ if ARGV.empty?
 end
 
 require 'parallel_split_test/runner'
-exit ParallelSplitTest::Runner.run(ARGV).max
+exit ParallelSplitTest::Runner.run(ARGV)

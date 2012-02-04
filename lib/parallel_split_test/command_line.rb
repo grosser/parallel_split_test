@@ -1,4 +1,5 @@
 require 'parallel_split_test'
+require 'parallel_split_test/output_recorder'
 require 'parallel'
 require 'rspec'
 require 'parallel_split_test/core_ext/rspec_example'
@@ -8,12 +9,13 @@ module ParallelSplitTest
     def run(err, out)
       Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
         ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
+        out = OutputRecorder.new(out)
         setup_copied_from_rspec(err, out)
 
         ParallelSplitTest.example_counter = 0
         ParallelSplitTest.process_number = process_number
 
-        run_group_of_tests
+        [run_group_of_tests, out.recorded]
       end
     end
 
