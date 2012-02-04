@@ -7,7 +7,7 @@ require 'parallel_split_test/core_ext/rspec_example'
 module ParallelSplitTest
   class CommandLine < RSpec::Core::CommandLine
     def run(err, out)
-      Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
+      results = Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
         ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
         out = OutputRecorder.new(out)
         setup_copied_from_rspec(err, out)
@@ -17,9 +17,18 @@ module ParallelSplitTest
 
         [run_group_of_tests, out.recorded]
       end
+
+      reprint_result_lines(out, results.map(&:last))
+      results.map(&:first).max # combine exit status
     end
 
     private
+
+    def reprint_result_lines(out, printed_outputs)
+      out.puts
+      out.puts "Summary:"
+      out.puts printed_outputs.map{|o| o[/.*\d+ failure.*/] }.join("\n")
+    end
 
     def run_group_of_tests
       example_count = @world.example_count / ParallelSplitTest.processes
