@@ -4,6 +4,10 @@ task :default do
   sh "rspec spec/"
 end
 
+task :selftest do
+  sh "./bin/parallel_split_test spec/"
+end
+
 rule /^version:bump:.*/ do |t|
   file = 'lib/parallel_split_test/version.rb'
   sh "git status | grep 'nothing to commit'" # ensure we are not dirty

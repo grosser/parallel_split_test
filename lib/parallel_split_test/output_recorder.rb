@@ -10,8 +10,8 @@ module ParallelSplitTest
     %w[puts write print putc].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__
         def #{method}(*args)
-          @recorded.puts(*args)
-          @out.puts(*args)
+          @recorded.#{method}(*args)
+          @out.#{method}(*args)
         end
       RUBY
     end

@@ -56,8 +56,9 @@ describe ParallelSplitTest do
     let(:root) { File.expand_path('../../', __FILE__) }
 
     before do
-      run "rm -rf spec/tmp ; mkdir spec/tmp"
-      Dir.chdir "spec/tmp"
+      dir = "spec/tmp#{ENV['TEST_ENV_NUMBER']}"
+      run "rm -rf #{dir} ; mkdir #{dir}"
+      Dir.chdir dir
     end
 
     after do
