@@ -62,7 +62,6 @@ TIPS
 
 TODO
 ====
- - PARALLEL_SPLIT_TEST_PROCESSES=3 rake selftest prints same errors twice <-> investigate
  - Cucumber support
  - Test::Unit support
 
