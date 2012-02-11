@@ -44,7 +44,7 @@ describe ParallelSplitTest do
     end
 
     def parallel_split_test(x, options={})
-      run "PARALLEL_SPLIT_TEST_PROCESSES=2 ../../bin/parallel_split_test #{x}", options
+      run "PARALLEL_SPLIT_TEST_PROCESSES=#{options[:process_count] || 2} ../../bin/parallel_split_test #{x}", options
     end
 
     def time
@@ -107,6 +107,23 @@ describe ParallelSplitTest do
         result = parallel_split_test "xxx_spec.rb"
         result.scan('1 example, 0 failures').size.should == 4
         result.scan(/it-ran-.-in-.?-/).sort.should == ["it-ran-a-in--", "it-ran-b-in-2-"]
+      end
+
+      it "runs in different processes for many examples/processes" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+          #{(0...3).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+          describe "Y" do
+            #{(3...6).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+            describe "Y" do
+              #{(6...9).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+            end
+          end
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb", :process_count => 3
+        result.scan('3 examples, 0 failures').size.should == 6
+        result.scan(/it-ran-.-in-.?-/).size.should == 9
       end
 
       it "runs faster" do
