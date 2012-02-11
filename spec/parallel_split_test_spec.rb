@@ -112,15 +112,15 @@ describe ParallelSplitTest do
       it "runs faster" do
         write "xxx_spec.rb", <<-RUBY
         describe "X" do
-          it { sleep 1  }
+          it { sleep 1.5  }
         end
 
         describe "Y" do
-          it { sleep 1  }
+          it { sleep 1.5  }
         end
         RUBY
 
-        time{ parallel_split_test "xxx_spec.rb" }.should < 2
+        time{ parallel_split_test "xxx_spec.rb" }.should < 3
       end
 
       it "splits based on examples" do
