@@ -144,14 +144,14 @@ describe ParallelSplitTest do
         write "xxx_spec.rb", <<-RUBY
         describe "X" do
           describe "Y" do
-            it { sleep 1  }
-            it { sleep 1  }
+            it { sleep 1.5  }
+            it { sleep 1.5  }
           end
         end
         RUBY
 
         result = nil
-        time{ result = parallel_split_test "xxx_spec.rb" }.should < 2
+        time{ result = parallel_split_test "xxx_spec.rb" }.should < 3
         result.scan('1 example, 0 failures').size.should == 4
       end
 
