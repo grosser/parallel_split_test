@@ -61,12 +61,13 @@ Took 10.06 seconds with 2 processes
 
 TIPS
 ====
+ - use `-o/--out` to get unified/clean output from all processes
  - set number of processes to use with `PARALLEL_SPLIT_TEST_PROCESSES` environment variable
 
 TODO
 ====
  - Cucumber support
- - Test::Unit support
+ - Test::Unit / Minitest support
 
 Author
 ======
