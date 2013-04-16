@@ -55,14 +55,11 @@ describe ParallelSplitTest do
 
     let(:root) { File.expand_path('../../', __FILE__) }
 
-    before do
+    around do |example|
       dir = "spec/tmp#{ENV['TEST_ENV_NUMBER']}"
       run "rm -rf #{dir} ; mkdir #{dir}"
-      Dir.chdir dir
-    end
-
-    after do
-      Dir.chdir root
+      Dir.chdir(dir, &example)
+      run "rm -rf #{dir}"
     end
 
     describe "printing version" do
