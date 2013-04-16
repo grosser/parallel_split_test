@@ -1,10 +1,16 @@
 require 'parallel_split_test/command_line'
+require 'shellwords'
 
 # a cleaned up version of the RSpec runner, e.g. no drb support
 module ParallelSplitTest
   class Runner < RSpec::Core::Runner
-    def self.run(args, err=$stderr, out=$stdout)
+    def self.run(args, options={})
+      err = $stderr
+      out = $stdout
       trap_interrupt
+
+      args += Shellwords.shellwords(options[:test_options]) if options[:test_options] # TODO smarter parsing ...
+
       options = RSpec::Core::ConfigurationOptions.new(args)
       options.parse_options
 
@@ -17,6 +23,8 @@ module ParallelSplitTest
     ensure
       RSpec.reset
     end
+
+    private
 
     def self.report_execution_time(out)
       start = Time.now.to_f

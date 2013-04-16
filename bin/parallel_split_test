@@ -2,6 +2,7 @@
 require "optparse"
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
+options = {}
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
 Split a big test file into multiple chunks and run them in parallel, giving ENV['TEST_ENV_NUMBER'] ('', '2', '3', ...)
@@ -13,6 +14,7 @@ Options are:
 BANNER
   opts.on("-v", "--version", "Show Version"){ require 'parallel_split_test/version'; puts ParallelSplitTest::VERSION; exit}
   opts.on("-h", "--help", "Show this.") { puts opts; exit }
+  opts.on("-o", "--test-options STRING", "Run tests with these options") { |test_options| options[:test_options] = test_options }
 end
 
 parser.parse!
@@ -23,4 +25,4 @@ if ARGV.empty?
 end
 
 require 'parallel_split_test/runner'
-exit ParallelSplitTest::Runner.run(ARGV)
+exit ParallelSplitTest::Runner.run(ARGV, options)

@@ -222,6 +222,18 @@ describe ParallelSplitTest do
         result = parallel_split_test "xxx_spec.rb"
         result.should include("1 example, 0 failures\n1 example, 0 failures")
       end
+
+      it "can use --test-options" do
+        write "xxx_spec.rb", <<-RUBY
+          describe "xxx" do
+            it "yyy" do
+            end
+          end
+        RUBY
+
+        result = parallel_split_test "xxx_spec.rb --test-options '--format html'"
+        result.should include "</body>"
+      end
     end
   end
 end

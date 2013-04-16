@@ -2,10 +2,7 @@ Split a big test file into multiple chunks and run them in parallel
 
 Install
 =======
-    sudo gem install parallel_split_test
-Or
-
-    rails plugin install git://github.com/grosser/parallel_split_test.git
+    gem install parallel_split_test
 
 Usage
 =====
@@ -55,6 +52,12 @@ Output
     2 examples, 0 failures
     Took 10.06 seconds with 2 processes
 
+
+Options
+=======
+<!-- last section of ./bin/parallel_split_test -h -->
+
+    -o, --test-options STRING        Run tests with these options
 
 TIPS
 ====
