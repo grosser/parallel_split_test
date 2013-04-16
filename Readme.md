@@ -74,4 +74,4 @@ Author
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
-[![Build Status](https://secure.travis-ci.org/grosser/parallel_split_test.png)](http://travis-ci.org/grosser/parallel_split_test)
+[![Build Status](https://travis-ci.org/grosser/parallel_split_test.png)](https://travis-ci.org/grosser/parallel_split_test)
