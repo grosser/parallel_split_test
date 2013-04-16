@@ -34,7 +34,7 @@ end
 
 ### 3: run
 ```Bash
-parallel_split_test spec/xxx_spec.rb # -o 'regular rspec options'
+parallel_split_test spec/xxx_spec.rb [regular test options]
 ```
 
 Output
@@ -58,14 +58,6 @@ Summary:
 2 examples, 0 failures
 Took 10.06 seconds with 2 processes
 ```
-
-If you use `--out/-o` the output will be unified from all processes.
-
-Options
-=======
-<!-- last section of ./bin/parallel_split_test -h -->
-
-    -o, --test-options STRING        Run tests with these options
 
 TIPS
 ====

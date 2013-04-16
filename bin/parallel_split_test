@@ -2,27 +2,22 @@
 require "optparse"
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
-options = {}
-parser = OptionParser.new do |opts|
-  opts.banner = <<BANNER
-Split a big test file into multiple chunks and run them in parallel, giving ENV['TEST_ENV_NUMBER'] ('', '2', '3', ...)
+if ARGV.include?("-v") or ARGV.include?("--version")
+  require 'parallel_split_test/version'
+  puts ParallelSplitTest::VERSION; exit
+elsif ARGV.include?("-h") or ARGV.include?("--help") or ARGV.empty?
+  puts <<-TEXT
+Split a big test file into multiple chunks and run them in parallel, giving ENV['TEST_ENV_NUMBER'] as '', '2', '3', ...
 
 Usage:
-    parallel_split_test test/baz/xxx_text.rb
+    parallel_split_test test/baz/xxx_text.rb [other rspec options]
 
 Options are:
-BANNER
-  opts.on("-v", "--version", "Show Version"){ require 'parallel_split_test/version'; puts ParallelSplitTest::VERSION; exit}
-  opts.on("-h", "--help", "Show this.") { puts opts; exit }
-  opts.on("-o", "--test-options STRING", "Run tests with these options") { |test_options| options[:test_options] = test_options }
-end
-
-parser.parse!
-
-if ARGV.empty?
-  puts parser
+    -v, --version                    Display the program version.
+    -h, --help                       Display this help message.
+  TEXT
   exit
 end
 
 require 'parallel_split_test/runner'
-exit ParallelSplitTest::Runner.run(ARGV, $stderr, $stdout, options)
+exit ParallelSplitTest::Runner.run(ARGV, $stderr, $stdout)

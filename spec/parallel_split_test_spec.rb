@@ -223,7 +223,7 @@ describe ParallelSplitTest do
         result.should include("1 example, 0 failures\n1 example, 0 failures")
       end
 
-      it "can use --test-options" do
+      it "can use rspec options" do
         write "xxx_spec.rb", <<-RUBY
           describe "xxx" do
             it "yyy" do
@@ -231,7 +231,7 @@ describe ParallelSplitTest do
           end
         RUBY
 
-        result = parallel_split_test "xxx_spec.rb --test-options '--format html'"
+        result = parallel_split_test "xxx_spec.rb --format html"
         result.should include "</body>"
       end
 
@@ -246,7 +246,7 @@ describe ParallelSplitTest do
           end
         RUBY
 
-        result = parallel_split_test "xxx_spec.rb --test-options '--format d --out xxx'"
+        result = parallel_split_test "xxx_spec.rb --format d --out xxx"
 
         # output does not show up in stdout
         result.should_not include "xxx"

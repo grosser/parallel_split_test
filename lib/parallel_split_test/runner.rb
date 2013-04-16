@@ -6,10 +6,8 @@ module ParallelSplitTest
   class Runner < RSpec::Core::Runner
     # @overwrite
     # stripped down version of run without --drb support / option parsing
-    def self.run(args, err=$stderr, out=$stdout, options={})
+    def self.run(args, err=$stderr, out=$stdout)
       trap_interrupt
-
-      args += Shellwords.shellwords(options[:test_options]) if options[:test_options]
 
       report_execution_time(out) do
         ParallelSplitTest::CommandLine.new(args).run(err, out)
