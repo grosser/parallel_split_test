@@ -10,9 +10,10 @@ Usage
 ### 1: prepare your databases
 To use 1 database per test-process, add this to your `config/database.yml`<br/>
 
-    test:
-      database: yourproject_test<%= ENV['TEST_ENV_NUMBER'] %>
-
+```Yaml
+test:
+  database: yourproject_test<%= ENV['TEST_ENV_NUMBER'] %>
+```
 
  - `TEST_ENV_NUMBER` is '' for the first process and 2 for the 2nd, it reuses your normal test database
  - Optionally install [parallel_tests](https://github.com/grosser/parallel_tests) to get database helper tasks like `rake parallel:prepare`
@@ -20,38 +21,45 @@ To use 1 database per test-process, add this to your `config/database.yml`<br/>
 
 ### 2: find a slow/big test file
 
-    # spec/xxx_spec.rb
-    require "spec_helper"
+```Ruby
+# spec/xxx_spec.rb
+require "spec_helper"
 
-    describe "X" do
-      it {sleep 5}
-      it {sleep 5}
-      it {sleep 5}
-    end
+describe "X" do
+  it {sleep 5}
+  it {sleep 5}
+  it {sleep 5}
+end
+```
 
 ### 3: run
-    parallel_split_test spec/xxx_spec.rb [regular rspec options]
+```Bash
+parallel_split_test spec/xxx_spec.rb # -o 'regular rspec options'
+```
 
 Output
 ======
 
-    parallel_split_test spec/xx_spec.rb
+```Bash
+parallel_split_test spec/xx_spec.rb
 
-    Running examples in 2 processes
-    .
+Running examples in 2 processes
+.
 
-    Finished in 5 seconds
-    1 example, 0 failures
-    ..
+Finished in 5 seconds
+1 example, 0 failures
+..
 
-    Finished in 1 seconds
-    2 examples, 0 failures
+Finished in 1 seconds
+2 examples, 0 failures
 
-    Summary:
-    1 example, 0 failures
-    2 examples, 0 failures
-    Took 10.06 seconds with 2 processes
+Summary:
+1 example, 0 failures
+2 examples, 0 failures
+Took 10.06 seconds with 2 processes
+```
 
+If you use `--out/-o` the output will be unified from all processes.
 
 Options
 =======

@@ -4,21 +4,15 @@ require 'shellwords'
 # a cleaned up version of the RSpec runner, e.g. no drb support
 module ParallelSplitTest
   class Runner < RSpec::Core::Runner
-    def self.run(args, options={})
-      err = $stderr
-      out = $stdout
+    # @overwrite
+    # stripped down version of run without --drb support / option parsing
+    def self.run(args, err=$stderr, out=$stdout, options={})
       trap_interrupt
 
-      args += Shellwords.shellwords(options[:test_options]) if options[:test_options] # TODO smarter parsing ...
-
-      options = RSpec::Core::ConfigurationOptions.new(args)
-      options.parse_options
-
-      ParallelSplitTest.choose_number_of_processes
-      out.puts "Running examples in #{ParallelSplitTest.processes} processes"
+      args += Shellwords.shellwords(options[:test_options]) if options[:test_options]
 
       report_execution_time(out) do
-        ParallelSplitTest::CommandLine.new(options).run(err, out)
+        ParallelSplitTest::CommandLine.new(args).run(err, out)
       end
     ensure
       RSpec.reset

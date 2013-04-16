@@ -6,23 +6,65 @@ require 'parallel_split_test/core_ext/rspec_example'
 
 module ParallelSplitTest
   class CommandLine < RSpec::Core::CommandLine
-    def run(err, out)
-      results = Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
-        ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
-        out = OutputRecorder.new(out)
-        setup_copied_from_rspec(err, out)
+    def initialize(args)
+      @args = args
+      super
+    end
 
+    def run(err, out)
+      processes = ParallelSplitTest.choose_number_of_processes
+      out.puts "Running examples in #{processes} processes"
+
+      results = Parallel.in_processes(processes) do |process_number|
         ParallelSplitTest.example_counter = 0
         ParallelSplitTest.process_number = process_number
+        set_test_env_number(process_number)
+        modify_out_file_in_args(process_number) if out_file
 
+        out = OutputRecorder.new(out)
+        setup_copied_from_rspec(err, out)
         [run_group_of_tests, out.recorded]
       end
+
+      combine_out_files if out_file
 
       reprint_result_lines(out, results.map(&:last))
       results.map(&:first).max # combine exit status
     end
 
     private
+
+    # modify + reparse args to unify output
+    def modify_out_file_in_args(process_number)
+      @args[out_file_position] = "#{out_file}.#{process_number}"
+      @options = RSpec::Core::ConfigurationOptions.new(@args)
+      @options.parse_options
+    end
+
+    def set_test_env_number(process_number)
+      ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
+    end
+
+    def out_file
+      @out_file ||= @args[out_file_position] if out_file_position
+    end
+
+    def out_file_position
+      @out_file_position ||= begin
+        if out_position = @args.index { |i| ["-o", "--out"].include?(i) }
+          out_position + 1
+        end
+      end
+    end
+
+    def combine_out_files
+      File.open(out_file, "w") do |f|
+        Dir["#{out_file}.*"].each do |file|
+          f.write File.read(file)
+          File.delete(file)
+        end
+      end
+    end
 
     def reprint_result_lines(out, printed_outputs)
       out.puts

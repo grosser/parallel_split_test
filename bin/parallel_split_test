@@ -25,4 +25,4 @@ if ARGV.empty?
 end
 
 require 'parallel_split_test/runner'
-exit ParallelSplitTest::Runner.run(ARGV, options)
+exit ParallelSplitTest::Runner.run(ARGV, $stderr, $stdout, options)

@@ -234,6 +234,35 @@ describe ParallelSplitTest do
         result = parallel_split_test "xxx_spec.rb --test-options '--format html'"
         result.should include "</body>"
       end
+
+      it "writes a unified --out" do
+        write "xxx_spec.rb", <<-RUBY
+          describe "xxx" do
+            it "yyy" do
+            end
+
+            it "zzz" do
+            end
+          end
+        RUBY
+
+        result = parallel_split_test "xxx_spec.rb --test-options '--format d --out xxx'"
+
+        # output does not show up in stdout
+        result.should_not include "xxx"
+        result.should_not include "yyy"
+
+        # basic output is still there
+        result.should include "Running examples in"
+
+        # recorded output is combination of both
+        out = File.read("xxx")
+        out.should include "yyy"
+        out.should include "zzz"
+
+        # parts are cleaned up
+        Dir["xxx.*"].should == []
+      end
     end
   end
 end
