@@ -11,5 +11,6 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.executables = ["parallel_split_test"]
   s.add_dependency "rspec", ">=2"
   s.add_dependency "parallel", ">=0.5.13"
+  s.add_dependency "hpricot"
   s.license = "MIT"
 end

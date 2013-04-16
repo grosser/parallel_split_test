@@ -2,6 +2,8 @@
 require "optparse"
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
+options = []
+
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
 Split a big test file into multiple chunks and run them in parallel, giving ENV['TEST_ENV_NUMBER'] ('', '2', '3', ...)
@@ -11,8 +13,49 @@ Usage:
 
 Options are:
 BANNER
-  opts.on("-v", "--version", "Show Version"){ require 'parallel_split_test/version'; puts ParallelSplitTest::VERSION; exit}
-  opts.on("-h", "--help", "Show this.") { puts opts; exit }
+  opts.on("-v", "--version", "Display the version."){ require 'parallel_split_test/version'; puts ParallelSplitTest::VERSION; exit}
+  opts.on("-h", "--help", "You're looking at it.") { puts opts; exit }
+
+  opts.on( "-r", "--require FILE", "Require a file." ) do |path|
+    options << "--require"
+    options << path
+  end
+
+  opts.on("-f", "--format FORMATTER", "Choose a formatter.",
+                "  [p]rogress (default - dots)",
+                "  [d]ocumentation (group and example names)",
+                "  [h]tml",
+                "  [t]extmate",
+                "  [j]son",
+                "  custom formatter class name") do |o|
+    options << "--format"
+    options << o
+  end
+
+  opts.on("-o", "--out FILE",
+                    "Write output to a file instead of STDOUT. This option applies",
+                    "  to the previously specified --format, or the default format",
+                    "  if no format is specified."
+                   ) do |o|
+    options << "--out"
+    options << o
+  end
+
+  opts.on("-e", "--example STRING", "Run examples whose full nested names include STRING (may be",
+                                            "  used more than once)") do |o|
+    options << "--example"
+    options << o
+  end
+
+  opts.on('-t', '--tag TAG[:VALUE]',
+            'Run examples with the specified tag, or exclude examples',
+            'by adding ~ before the tag.',
+            '  - e.g. ~slow',
+            '  - TAG is always converted to a symbol') do |tag|
+    options << "--tag"
+    options << tag
+  end
+
 end
 
 parser.parse!
@@ -23,4 +66,4 @@ if ARGV.empty?
 end
 
 require 'parallel_split_test/runner'
-exit ParallelSplitTest::Runner.run(ARGV)
+exit ParallelSplitTest::Runner.run([ARGV, options].flatten)

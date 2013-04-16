@@ -6,6 +6,11 @@ require 'parallel_split_test/core_ext/rspec_example'
 
 module ParallelSplitTest
   class CommandLine < RSpec::Core::CommandLine
+    def initialize(args)
+      @args = args
+      super args
+    end
+
     def run(err, out)
       results = Parallel.in_processes(ParallelSplitTest.processes) do |process_number|
         ENV['TEST_ENV_NUMBER'] = (process_number == 0 ? '' : (process_number + 1).to_s)
@@ -52,6 +57,17 @@ module ParallelSplitTest
     def setup_copied_from_rspec(err, out)
       @configuration.error_stream = err
       @configuration.output_stream ||= out
+
+      parse_args = @args
+      if !parse_args.index("--out").nil?
+        file_index = parse_args.index("--out") + 1
+        file       = parse_args[file_index]
+        append     = ENV['TEST_ENV_NUMBER'].empty? ? 1 : ENV['TEST_ENV_NUMBER']
+        parse_args[file_index] = "#{file}.#{append}"
+      end
+      @options = RSpec::Core::ConfigurationOptions.new(parse_args)
+      @options.parse_options
+
       @options.configure(@configuration)
       @configuration.load_spec_files
       @world.announce_filters
