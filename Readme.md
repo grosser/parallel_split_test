@@ -73,8 +73,12 @@ TODO
  - Cucumber support
  - Test::Unit / Minitest support
 
-Author
-======
+Authors
+=======
+
+### [Contributors](https://github.com/grosser/parallel_split_test/contributors)
+ - [bootstraponline](https://github.com/bootstraponline)
+
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
