@@ -5,13 +5,15 @@ require 'rspec'
 require 'parallel_split_test/core_ext/rspec_example'
 
 module ParallelSplitTest
-  class CommandLine < RSpec::Core::CommandLine
+  class CommandLine < RSpec::Core::Runner
     def initialize(args)
       @args = args
       super
     end
 
     def run(err, out)
+      @options = RSpec::Core::ConfigurationOptions.new(@args)
+
       processes = ParallelSplitTest.choose_number_of_processes
       out.puts "Running examples in #{processes} processes"
 
@@ -38,7 +40,6 @@ module ParallelSplitTest
     def modify_out_file_in_args(process_number)
       @args[out_file_position] = "#{out_file}.#{process_number}"
       @options = RSpec::Core::ConfigurationOptions.new(@args)
-      @options.parse_options
     end
 
     def set_test_env_number(process_number)
@@ -75,25 +76,17 @@ module ParallelSplitTest
     def run_group_of_tests
       example_count = @world.example_count / ParallelSplitTest.processes
 
-      @configuration.reporter.report(example_count, seed) do |reporter|
-        begin
-          @configuration.run_hook(:before, :suite)
-          groups = @world.example_groups.ordered
-          results = groups.map {|g| g.run(reporter)}
-          results.all? ? 0 : @configuration.failure_exit_code
-        ensure
-          @configuration.run_hook(:after, :suite)
-        end
+      @configuration.reporter.report(example_count) do |reporter|
+        groups = @world.example_groups
+        results = groups.map {|g| g.run(reporter)}
+        results.all? ? 0 : @configuration.failure_exit_code
       end
     end
 
-    def seed
-      @configuration.randomize? ? @configuration.seed : nil
-    end
-
+    # https://github.com/rspec/rspec-core/blob/6ee92a0d47bcb1f3abcd063dca2cee005356d709/lib/rspec/core/runner.rb#L93
     def setup_copied_from_rspec(err, out)
       @configuration.error_stream = err
-      @configuration.output_stream ||= out
+      @configuration.output_stream = out if @configuration.output_stream == $stdout
       @options.configure(@configuration)
       @configuration.load_spec_files
       @world.announce_filters
