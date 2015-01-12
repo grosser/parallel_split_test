@@ -9,7 +9,7 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.homepage = "http://github.com/grosser/#{name}"
   s.files = `git ls-files`.split("\n")
   s.executables = ["parallel_split_test"]
-  s.add_dependency "rspec", ">=2"
+  s.add_dependency "rspec", ">=3.1.0"
   s.add_dependency "parallel", ">=0.5.13"
   s.license = "MIT"
 end
