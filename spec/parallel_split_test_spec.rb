@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ParallelSplitTest do
   it "has a VERSION" do
-    ParallelSplitTest::VERSION.should =~ /^[\.\da-z]+$/
+    expect(ParallelSplitTest::VERSION).to match(/^[\.\da-z]+$/)
   end
 
   describe ".best_number_of_processes" do
@@ -14,18 +14,18 @@ describe ParallelSplitTest do
 
     it "uses ENV" do
       ENV['PARALLEL_SPLIT_TEST_PROCESSES'] = "5"
-      count.should == 5
+      expect(count).to eq(5)
     end
 
     it "uses physical_processor_count" do
-      Parallel.stub(:physical_processor_count).and_return 6
-      count.should == 6
+      allow(Parallel).to receive(:physical_processor_count).and_return 6
+      expect(count).to eq(6)
     end
 
     it "uses processor_count if everything else fails" do
-      Parallel.stub(:physical_processor_count).and_return 0
-      Parallel.stub(:processor_count).and_return 7
-      count.should == 7
+      allow(Parallel).to receive(:physical_processor_count).and_return 0
+      allow(Parallel).to receive(:processor_count).and_return 7
+      expect(count).to eq(7)
     end
   end
 
@@ -64,25 +64,25 @@ describe ParallelSplitTest do
 
     describe "printing version" do
       it "prints version on -v" do
-        parallel_split_test("-v").strip.should =~ /^[\.\da-z]+$/
+        expect(parallel_split_test("-v").strip).to match(/^[\.\da-z]+$/)
       end
 
       it "prints version on --version" do
-        parallel_split_test("--version").strip.should =~ /^[\.\da-z]+$/
+        expect(parallel_split_test("--version").strip).to match(/^[\.\da-z]+$/)
       end
     end
 
     describe "printing help" do
       it "prints help on -h" do
-        parallel_split_test("-h").should include("Usage")
+        expect(parallel_split_test("-h")).to include("Usage")
       end
 
       it "prints help on --help" do
-        parallel_split_test("-h").should include("Usage")
+        expect(parallel_split_test("-h")).to include("Usage")
       end
 
       it "prints help on no arguments" do
-        parallel_split_test("").should include("Usage")
+        expect(parallel_split_test("")).to include("Usage")
       end
     end
 
@@ -102,8 +102,8 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.scan('1 example, 0 failures').size.should == 4
-        result.scan(/it-ran-.-in-.?-/).sort.should == ["it-ran-a-in--", "it-ran-b-in-2-"]
+        expect(result.scan('1 example, 0 failures').size).to eq(4)
+        expect(result.scan(/it-ran-.-in-.?-/).sort).to eq(["it-ran-a-in--", "it-ran-b-in-2-"])
       end
 
       it "runs in different processes for many examples/processes" do
@@ -119,8 +119,8 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb", :process_count => 3
-        result.scan('3 examples, 0 failures').size.should == 6
-        result.scan(/it-ran-.-in-.?-/).size.should == 9
+        expect(result.scan('3 examples, 0 failures').size).to eq(6)
+        expect(result.scan(/it-ran-.-in-.?-/).size).to eq(9)
       end
 
       it "runs faster" do
@@ -134,7 +134,7 @@ describe ParallelSplitTest do
         end
         RUBY
 
-        time{ parallel_split_test "xxx_spec.rb" }.should < 3
+        expect(time{ parallel_split_test "xxx_spec.rb" }).to be < 3
       end
 
       it "splits based on examples" do
@@ -148,14 +148,14 @@ describe ParallelSplitTest do
         RUBY
 
         result = nil
-        time{ result = parallel_split_test "xxx_spec.rb" }.should < 3
-        result.scan('1 example, 0 failures').size.should == 4
+        expect(time{ result = parallel_split_test "xxx_spec.rb" }).to be < 3
+        expect(result.scan('1 example, 0 failures').size).to eq(4)
       end
 
       it "sets up TEST_ENV_NUMBER before loading the test files, so db connections are set up correctly" do
         write "xxx_spec.rb", 'puts "ENV_IS_#{ENV[\'TEST_ENV_NUMBER\']}_"'
         result = parallel_split_test "xxx_spec.rb"
-        result.scan(/ENV_IS_.?_/).sort.should == ["ENV_IS_2_", "ENV_IS__"]
+        expect(result.scan(/ENV_IS_.?_/).sort).to eq(["ENV_IS_2_", "ENV_IS__"])
       end
 
       it "fails when one of the processes fail" do
@@ -168,8 +168,8 @@ describe ParallelSplitTest do
 
         # test works because if :fail => true does not fail it raises
         result = parallel_split_test "xxx_spec.rb", :fail => true
-        result.should include('1 example, 1 failure')
-        result.should include('1 example, 0 failures')
+        expect(result).to include('1 example, 1 failure')
+        expect(result).to include('1 example, 0 failures')
       end
 
       it "fails when all processes fail" do
@@ -182,7 +182,7 @@ describe ParallelSplitTest do
 
         # test works because if :fail => true does not fail it raises
         result = parallel_split_test "xxx_spec.rb", :fail => true
-        result.scan('1 example, 1 failure').size.should == 4
+        expect(result.scan('1 example, 1 failure').size).to eq(4)
       end
 
       it "passes when no tests where run" do
@@ -191,7 +191,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.should include('No examples found')
+        expect(result).to include('No examples found')
       end
 
       it "prints a summary before running" do
@@ -200,7 +200,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.should include('Running examples in 2 processes')
+        expect(result).to include('Running examples in 2 processes')
       end
 
       it "prints a runtime summary at the end" do
@@ -209,7 +209,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.should =~ /Took [\d\.]+ seconds with 2 processes/
+        expect(result).to match(/Took [\d\.]+ seconds with 2 processes/)
       end
 
       it "reprints all summary lines at the end" do
@@ -220,7 +220,7 @@ describe ParallelSplitTest do
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
-        result.should include("1 example, 0 failures\n1 example, 0 failures")
+        expect(result).to include("1 example, 0 failures\n1 example, 0 failures")
       end
 
       it "can use rspec options" do
@@ -232,7 +232,7 @@ describe ParallelSplitTest do
         RUBY
 
         result = parallel_split_test "xxx_spec.rb --format html"
-        result.should include "</body>"
+        expect(result).to include "</body>"
       end
 
       it "writes a unified --out" do
@@ -249,19 +249,19 @@ describe ParallelSplitTest do
         result = parallel_split_test "xxx_spec.rb --format d --out xxx"
 
         # output does not show up in stdout
-        result.should_not include "xxx"
-        result.should_not include "yyy"
+        expect(result).not_to include "xxx"
+        expect(result).not_to include "yyy"
 
         # basic output is still there
-        result.should include "Running examples in"
+        expect(result).to include "Running examples in"
 
         # recorded output is combination of both
         out = File.read("xxx")
-        out.should include "yyy"
-        out.should include "zzz"
+        expect(out).to include "yyy"
+        expect(out).to include "zzz"
 
         # parts are cleaned up
-        Dir["xxx.*"].should == []
+        expect(Dir["xxx.*"]).to eq([])
       end
     end
   end

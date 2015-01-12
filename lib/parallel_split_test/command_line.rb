@@ -12,7 +12,7 @@ module ParallelSplitTest
     end
 
     def run(err, out)
-      @options = ::RSpec::Core::ConfigurationOptions.new(@args)
+      @options = RSpec::Core::ConfigurationOptions.new(@args)
 
       processes = ParallelSplitTest.choose_number_of_processes
       out.puts "Running examples in #{processes} processes"
@@ -40,7 +40,6 @@ module ParallelSplitTest
     def modify_out_file_in_args(process_number)
       @args[out_file_position] = "#{out_file}.#{process_number}"
       @options = RSpec::Core::ConfigurationOptions.new(@args)
-      @options.parse_options
     end
 
     def set_test_env_number(process_number)

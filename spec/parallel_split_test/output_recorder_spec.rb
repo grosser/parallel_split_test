@@ -8,12 +8,12 @@ describe ParallelSplitTest::OutputRecorder do
       recorder.send(method, "XXX")
 
       # output got recorded
-      recorder.recorded.strip.should == "XXX"
-      out.read.should == ""
+      expect(recorder.recorded.strip).to eq("XXX")
+      expect(out.read).to eq("")
 
       # output was written to original
       out.rewind
-      out.read.strip.should == "XXX"
+      expect(out.read.strip).to eq("XXX")
     end
   end
 
@@ -21,6 +21,6 @@ describe ParallelSplitTest::OutputRecorder do
     out = StringIO.new("")
     recorder = ParallelSplitTest::OutputRecorder.new(out)
     recorder.puts
-    recorder.recorded.should == "\n"
+    expect(recorder.recorded).to eq("\n")
   end
 end
