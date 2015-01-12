@@ -2,7 +2,10 @@ Split a big test file into multiple chunks and run them in parallel
 
 Install
 =======
-    gem install parallel_split_test
+
+```Bash
+gem install parallel_split_test
+```
 
 Usage
 =====
