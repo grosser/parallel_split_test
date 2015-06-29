@@ -12,6 +12,8 @@ module ParallelSplitTest
     end
 
     def run(err, out)
+      no_summary = @args.delete('--no-summary')
+
       @options = RSpec::Core::ConfigurationOptions.new(@args)
 
       processes = ParallelSplitTest.choose_number_of_processes
@@ -30,7 +32,7 @@ module ParallelSplitTest
 
       combine_out_files if out_file
 
-      reprint_result_lines(out, results.map(&:last))
+      reprint_result_lines(out, results.map(&:last)) unless no_summary
       results.map(&:first).max # combine exit status
     end
 
