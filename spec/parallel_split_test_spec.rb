@@ -212,6 +212,15 @@ describe ParallelSplitTest do
         expect(result).to match(/Took [\d\.]+ seconds with 2 processes/)
       end
 
+      it "omits summary when --no-summary is used" do
+        write "xxx_spec.rb", <<-RUBY
+        describe "X" do
+        end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb --no-summary"
+        expect(result).not_to match(/Summary:/)
+      end
+
       it "reprints all summary lines at the end" do
         write "xxx_spec.rb", <<-RUBY
         describe "X" do
