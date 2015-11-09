@@ -66,7 +66,7 @@ TIPS
 ====
  - use `-o/--out` to get unified/clean output from all processes
  - set number of processes to use with `PARALLEL_SPLIT_TEST_PROCESSES` environment variable
- - [unify JUnit output](http://blog.tech.renttherunway.com/?p=631) for rspec
+ - [unify JUnit output](http://dresscode.renttherunway.com/blog/631) for rspec
 
 TODO
 ====
