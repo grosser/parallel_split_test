@@ -78,6 +78,7 @@ Authors
 
 ### [Contributors](https://github.com/grosser/parallel_split_test/contributors)
  - [bootstraponline](https://github.com/bootstraponline)
+ - [ModST](https://github.com/ModST)
 
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
