@@ -291,8 +291,7 @@ describe ParallelSplitTest do
         expect(result).to include "Running examples in"
 
         # two separate out files remain
-        expect(Dir["*-xxx"]).to include "0-xxx"
-        expect(Dir["*-xxx"]).to include "1-xxx"
+        expect(Dir["*-xxx"].sort!).to eq(["0-xxx", "1-xxx"])
       end
     end
   end
