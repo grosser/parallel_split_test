@@ -254,7 +254,6 @@ describe ParallelSplitTest do
             end
           end
         RUBY
-
         result = parallel_split_test "xxx_spec.rb --format d --out xxx"
 
         # output does not show up in stdout
@@ -270,7 +269,29 @@ describe ParallelSplitTest do
         expect(out).to include "zzz"
 
         # parts are cleaned up
-        expect(Dir["xxx.*"]).to eq([])
+        expect(Dir["*-xxx"]).to eq([])
+      end
+
+      it "writes seperate files with --no-merge" do
+        write "xxx_spec.rb", <<-RUBY
+          describe "xxx" do
+            it "yyy" do
+            end
+
+            it "zzz" do
+            end
+          end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb --format d --out xxx --no-merge"
+        # output does not show up in stdout
+        expect(result).not_to include "xxx"
+        expect(result).not_to include "yyy"
+
+        # basic output is still there
+        expect(result).to include "Running examples in"
+
+        # two separate out files remain
+        expect(Dir["*-xxx"].sort!).to eq(["0-xxx", "1-xxx"].sort!)
       end
     end
   end

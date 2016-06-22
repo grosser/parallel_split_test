@@ -13,6 +13,7 @@ module ParallelSplitTest
 
     def run(err, out)
       no_summary = @args.delete('--no-summary')
+      no_merge = @args.delete('--no-merge')
 
       @options = RSpec::Core::ConfigurationOptions.new(@args)
 
@@ -24,13 +25,13 @@ module ParallelSplitTest
         ParallelSplitTest.process_number = process_number
         set_test_env_number(process_number)
         modify_out_file_in_args(process_number) if out_file
-
         out = OutputRecorder.new(out)
         setup_copied_from_rspec(err, out)
         [run_group_of_tests, out.recorded]
       end
 
-      combine_out_files if out_file
+
+      combine_out_files if out_file unless no_merge
 
       reprint_result_lines(out, results.map(&:last)) unless no_summary
       results.map(&:first).max # combine exit status
@@ -40,7 +41,7 @@ module ParallelSplitTest
 
     # modify + reparse args to unify output
     def modify_out_file_in_args(process_number)
-      @args[out_file_position] = "#{out_file}.#{process_number}"
+      @args[out_file_position] = process_number.to_s << "-" << out_file
       @options = RSpec::Core::ConfigurationOptions.new(@args)
     end
 
@@ -62,7 +63,7 @@ module ParallelSplitTest
 
     def combine_out_files
       File.open(out_file, "w") do |f|
-        Dir["#{out_file}.*"].each do |file|
+        Dir["*-#{out_file}"].each do |file|
           f.write File.read(file)
           File.delete(file)
         end

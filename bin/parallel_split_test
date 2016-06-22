@@ -16,6 +16,7 @@ Options are:
     -v, --version                    Display the program version.
     -h, --help                       Display this help message.
     --no-summary                     Does not display test summary.
+    --no-merge                       Does not merge --out results.
   TEXT
   exit
 end
