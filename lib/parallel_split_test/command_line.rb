@@ -41,7 +41,9 @@ module ParallelSplitTest
 
     # modify + reparse args to unify output
     def modify_out_file_in_args(process_number)
-      @args[out_file_position] = process_number.to_s << "-" << out_file
+      target = out_file.split(".")
+      target[target.length - 2] = target[target.length - 2] << "." << process_number.to_s
+      @args[out_file_position] = target.join(".")
       @options = RSpec::Core::ConfigurationOptions.new(@args)
     end
 
@@ -63,7 +65,9 @@ module ParallelSplitTest
 
     def combine_out_files
       File.open(out_file, "w") do |f|
-        Dir["*-#{out_file}"].each do |file|
+        target = out_file.split(".")
+        target[target.length - 2] = target[target.length - 2] << ".*"
+        Dir["#{target.join(".")}"].each do |file|
           f.write File.read(file)
           File.delete(file)
         end
