@@ -11,4 +11,5 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.add_dependency "rspec", ">=3.1.0"
   s.add_dependency "parallel", ">=0.5.13"
   s.license = "MIT"
+  s.required_ruby_version = '>= 2.1.0'
 end
