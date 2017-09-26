@@ -7,7 +7,7 @@ module ParallelSplitTest
       @out = out
     end
 
-    %w[puts write print putc flush tty?].each do |method|
+    %w[puts write print putc flush tty? closed?].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__
         def #{method}(*args)
           @recorded.#{method}(*args)
