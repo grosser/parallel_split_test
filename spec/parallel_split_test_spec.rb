@@ -113,14 +113,15 @@ describe ParallelSplitTest do
           describe "Y" do
             #{(3...6).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
             describe "Y" do
-              #{(6...9).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+              #{(6...11).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
             end
           end
         end
         RUBY
         result = parallel_split_test "xxx_spec.rb", :process_count => 3
-        expect(result.scan('3 examples, 0 failures').size).to eq(6)
-        expect(result.scan(/it-ran-.-in-.?-/).size).to eq(9)
+        expect(result.scan('4 examples, 0 failures').size).to eq(4)
+        expect(result.scan('3 examples, 0 failures').size).to eq(2)
+        expect(result.scan(/it-ran-\d+-in-(\d+)?-/).size).to eq(11)
       end
 
       it "runs faster" do
