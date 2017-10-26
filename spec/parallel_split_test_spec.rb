@@ -283,6 +283,7 @@ describe ParallelSplitTest do
             end
           end
         RUBY
+        run "mkdir -p output"
         result = parallel_split_test "xxx_spec.rb --format d --out output/xxx.xml --no-merge"
         # output does not show up in stdout
         expect(result).not_to include "xxx"
