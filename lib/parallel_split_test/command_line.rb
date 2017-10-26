@@ -3,6 +3,7 @@ require 'parallel_split_test/output_recorder'
 require 'parallel'
 require 'rspec'
 require 'parallel_split_test/core_ext/rspec_example'
+require 'parallel_split_test/core_ext/rspec_world'
 
 module ParallelSplitTest
   class CommandLine < RSpec::Core::Runner
@@ -26,10 +27,8 @@ module ParallelSplitTest
         set_test_env_number(process_number)
         modify_out_file_in_args(process_number) if out_file
         out = OutputRecorder.new(out)
-        setup_copied_from_rspec(err, out)
-        [run_group_of_tests, out.recorded]
+        [super(err, out), out.recorded]
       end
-
 
       combine_out_files if out_file unless no_merge
 
@@ -78,25 +77,6 @@ module ParallelSplitTest
       out.puts
       out.puts "Summary:"
       out.puts printed_outputs.map{|o| o[/.*\d+ failure.*/] }.join("\n")
-    end
-
-    def run_group_of_tests
-      example_count = @world.example_count / ParallelSplitTest.processes
-
-      @configuration.reporter.report(example_count) do |reporter|
-        groups = @world.example_groups
-        results = groups.map {|g| g.run(reporter)}
-        results.all? ? 0 : @configuration.failure_exit_code
-      end
-    end
-
-    # https://github.com/rspec/rspec-core/blob/6ee92a0d47bcb1f3abcd063dca2cee005356d709/lib/rspec/core/runner.rb#L93
-    def setup_copied_from_rspec(err, out)
-      @configuration.error_stream = err
-      @configuration.output_stream = out if @configuration.output_stream == $stdout
-      @options.configure(@configuration)
-      @configuration.load_spec_files
-      @world.announce_filters
     end
   end
 end
