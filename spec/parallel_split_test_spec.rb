@@ -283,7 +283,8 @@ describe ParallelSplitTest do
             end
           end
         RUBY
-        result = parallel_split_test "xxx_spec.rb --format d --out xxx.xml --no-merge"
+        run "mkdir -p output"
+        result = parallel_split_test "xxx_spec.rb --format d --out output/xxx.xml --no-merge"
         # output does not show up in stdout
         expect(result).not_to include "xxx"
         expect(result).not_to include "yyy"
@@ -292,7 +293,7 @@ describe ParallelSplitTest do
         expect(result).to include "Running examples in"
 
         # two separate out files remain
-        expect(Dir["xxx.*.xml"].sort!).to eq(["xxx.0.xml", "xxx.1.xml"].sort!)
+        expect(Dir["output/xxx.*.xml"].sort!).to eq(["output/xxx.0.xml", "output/xxx.1.xml"].sort!)
       end
     end
   end
