@@ -89,34 +89,34 @@ describe ParallelSplitTest do
     describe "running tests" do
       it "runs in different processes" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          it "a" do
-            puts "it-ran-a-in-\#{ENV['TEST_ENV_NUMBER']}-"
+          describe "X" do
+            it "a" do
+              puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
+            end
           end
-        end
-
-        describe "Y" do
-          it "b" do
-            puts "it-ran-b-in-\#{ENV['TEST_ENV_NUMBER']}-"
+  
+          describe "Y" do
+            it "b" do
+              puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
+            end
           end
-        end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         expect(result.scan('1 example, 0 failures').size).to eq(4)
-        expect(result.scan(/it-ran-.-in-.?-/).sort).to eq(["it-ran-a-in--", "it-ran-b-in-2-"])
+        expect(result.scan(/it-ran-in-.?-/).sort).to eq(["it-ran-in--", "it-ran-in-2-"])
       end
 
       it "runs in different processes for many examples/processes" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          #{(0...3).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
-          describe "Y" do
-            #{(3...6).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+          describe "X" do
+            #{(0...3).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
             describe "Y" do
-              #{(6...11).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+              #{(3...6).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+              describe "Y" do
+                #{(6...11).to_a.map{|i| "it{ puts 'it-ran-"+ i.to_s+"-in-'+ENV['TEST_ENV_NUMBER'].to_s + '-' }" }.join("\n")}
+              end
             end
           end
-        end
         RUBY
         result = parallel_split_test "xxx_spec.rb", :process_count => 3
         expect(result.scan('4 examples, 0 failures').size).to eq(4)
@@ -126,13 +126,13 @@ describe ParallelSplitTest do
 
       it "runs faster" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          it { sleep 1.5  }
-        end
-
-        describe "Y" do
-          it { sleep 1.5  }
-        end
+          describe "X" do
+            it { sleep 1.5  }
+          end
+  
+          describe "Y" do
+            it { sleep 1.5  }
+          end
         RUBY
 
         expect(time{ parallel_split_test "xxx_spec.rb" }).to be < 3
@@ -140,12 +140,12 @@ describe ParallelSplitTest do
 
       it "splits based on examples" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          describe "Y" do
-            it { sleep 1.5  }
-            it { sleep 1.5  }
+          describe "X" do
+            describe "Y" do
+              it { sleep 1.5  }
+              it { sleep 1.5  }
+            end
           end
-        end
         RUBY
 
         result = nil
@@ -161,10 +161,10 @@ describe ParallelSplitTest do
 
       it "fails when one of the processes fail" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          it { sleep 0.1; raise }
-          it { sleep 0.1  }
-        end
+          describe "X" do
+            it { sleep 0.1; raise }
+            it { sleep 0.1  }
+          end
         RUBY
 
         # test works because if :fail => true does not fail it raises
@@ -175,10 +175,10 @@ describe ParallelSplitTest do
 
       it "fails when all processes fail" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          it { sleep 0.1; raise }
-          it { sleep 0.1; raise  }
-        end
+          describe "X" do
+            it { sleep 0.1; raise }
+            it { sleep 0.1; raise  }
+          end
         RUBY
 
         # test works because if :fail => true does not fail it raises
@@ -188,8 +188,8 @@ describe ParallelSplitTest do
 
       it "passes when no tests where run" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-        end
+          describe "X" do
+          end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         expect(result).to include('No examples found')
@@ -197,8 +197,8 @@ describe ParallelSplitTest do
 
       it "prints a summary before running" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-        end
+          describe "X" do
+          end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         expect(result).to include('Running examples in 2 processes')
@@ -206,8 +206,8 @@ describe ParallelSplitTest do
 
       it "prints a runtime summary at the end" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-        end
+          describe "X" do
+          end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         expect(result).to match(/Took [\d\.]+ seconds with 2 processes/)
@@ -215,8 +215,8 @@ describe ParallelSplitTest do
 
       it "omits summary when --no-summary is used" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-        end
+          describe "X" do
+          end
         RUBY
         result = parallel_split_test "xxx_spec.rb --no-summary"
         expect(result).not_to match(/Summary:/)
@@ -224,10 +224,10 @@ describe ParallelSplitTest do
 
       it "reprints all summary lines at the end" do
         write "xxx_spec.rb", <<-RUBY
-        describe "X" do
-          it {  }
-          it { sleep 0.1  }
-        end
+          describe "X" do
+            it {  }
+            it { sleep 0.1  }
+          end
         RUBY
         result = parallel_split_test "xxx_spec.rb"
         expect(result).to include("1 example, 0 failures\n1 example, 0 failures")
