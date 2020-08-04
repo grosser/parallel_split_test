@@ -2,7 +2,6 @@ require 'parallel_split_test'
 require 'parallel_split_test/output_recorder'
 require 'parallel'
 require 'rspec'
-require 'parallel_split_test/core_ext/rspec_example'
 require 'parallel_split_test/core_ext/rspec_world'
 
 module ParallelSplitTest

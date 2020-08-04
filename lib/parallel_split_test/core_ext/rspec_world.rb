@@ -2,14 +2,14 @@ require 'parallel_split_test'
 require 'rspec/core/example'
 
 RSpec::Core::World.class_eval do
-  alias :example_count_without_parallel_split_test :example_count
-  def example_count(*args, &block)
-    count = example_count_without_parallel_split_test(*args, &block)
-    quotient = count / ParallelSplitTest.processes
-    if ParallelSplitTest.process_number < count % ParallelSplitTest.processes
-      quotient + 1
-    else
-      quotient
+  alias :original_prepare_example_filtereing :prepare_example_filtering
+
+  def prepare_example_filtering
+    @original_filtered_examples = original_prepare_example_filtereing
+    @filtered_examples = Hash.new do |hash, group|
+      hash[group] = @original_filtered_examples[group].select do |x|
+        ParallelSplitTest.run_example?
+      end
     end
   end
 end

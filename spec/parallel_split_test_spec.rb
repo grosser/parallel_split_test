@@ -87,6 +87,27 @@ describe ParallelSplitTest do
     end
 
     describe "running tests" do
+      it "only runs before(:all) if a process executes that test" do
+        write "xxx_spec.rb", <<-RUBY
+          describe "X" do
+            before(:all) do
+              puts "Before ALL X"
+            end
+            it "a" do
+              puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
+            end
+          end
+
+          describe "Y" do
+            it "b" do
+              puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
+            end
+          end
+        RUBY
+        result = parallel_split_test "xxx_spec.rb"
+        expect(result.scan('Before ALL X').size).to eq(1)
+      end
+
       it "runs in different processes" do
         write "xxx_spec.rb", <<-RUBY
           describe "X" do
