@@ -115,7 +115,7 @@ describe ParallelSplitTest do
               puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
             end
           end
-  
+
           describe "Y" do
             it "b" do
               puts "it-ran-in-\#{ENV['TEST_ENV_NUMBER']}-"
@@ -150,7 +150,7 @@ describe ParallelSplitTest do
           describe "X" do
             it { sleep 1.5  }
           end
-  
+
           describe "Y" do
             it { sleep 1.5  }
           end
