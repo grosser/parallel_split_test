@@ -68,6 +68,38 @@ TIPS
  - set number of processes to use with `PARALLEL_SPLIT_TEST_PROCESSES` environment variable
  - [unify JUnit output](http://dresscode.renttherunway.com/blog/631) for rspec
 
+
+before(:all) rspec hooks
+========================
+
+The `before(:all)` hooks in rspec will be executed once for every process that runs a test in an example group. This means if you have more processes than tests in a group, the `before(:all)` block for that group will be fired N times. For example, this spec has 3 tests and a `before(:all)` block:
+
+```ruby
+describe "before all behavior"
+  before(:all) do
+    puts "Process: #{Process.pid} Before ALL"
+  end
+
+  it "a" do
+  end
+
+  it "b" do
+  end
+
+  it "c" do
+  end
+end
+```
+
+When you run this with 3 or more processes you'll see the `before(:all)` call is invoked 3 times, once per each process (since "a", "b", and "c" tests are each run on a different process).
+
+```
+$ PARALLEL_SPLIT_TEST_PROCESSES=3 bundle exec parallel_split_test spec/ | grep "Before ALL"
+Process: 31539 Before ALL
+Process: 31538 Before ALL
+Process: 31540 Before ALL
+```
+
 TODO
 ====
  - Cucumber support
