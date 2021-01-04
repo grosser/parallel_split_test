@@ -3,7 +3,7 @@ PATH
   specs:
     parallel_split_test (0.8.0)
       parallel (>= 0.5.13)
-      rspec (>= 3.1.0)
+      rspec-core (>= 3.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -33,6 +33,7 @@ DEPENDENCIES
   bump
   parallel_split_test!
   rake
+  rspec
 
 BUNDLED WITH
    2.1.4

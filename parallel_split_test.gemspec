@@ -8,7 +8,7 @@ Gem::Specification.new name, ParallelSplitTest::VERSION do |s|
   s.homepage = "https://github.com/grosser/#{name}"
   s.files = `git ls-files lib bin Readme.md`.split("\n")
   s.executables = ["parallel_split_test"]
-  s.add_dependency "rspec", ">=3.1.0"
+  s.add_dependency "rspec-core", ">=3.1.0"
   s.add_dependency "parallel", ">=0.5.13"
   s.license = "MIT"
   s.required_ruby_version = '>= 2.2.0'
