@@ -14,11 +14,7 @@ module ParallelSplitTest
     end
 
     def best_number_of_processes
-      [
-        ENV['PARALLEL_SPLIT_TEST_PROCESSES'],
-        Parallel.physical_processor_count,
-        Parallel.processor_count
-      ].map(&:to_i).find{|number| number > 0 }
+      Integer(ENV['PARALLEL_SPLIT_TEST_PROCESSES'] || Parallel.processor_count)
     end
   end
 end

@@ -17,13 +17,7 @@ describe ParallelSplitTest do
       expect(count).to eq(5)
     end
 
-    it "uses physical_processor_count" do
-      allow(Parallel).to receive(:physical_processor_count).and_return 6
-      expect(count).to eq(6)
-    end
-
-    it "uses processor_count if everything else fails" do
-      allow(Parallel).to receive(:physical_processor_count).and_return 0
+    it "uses processor_count" do
       allow(Parallel).to receive(:processor_count).and_return 7
       expect(count).to eq(7)
     end
